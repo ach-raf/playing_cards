@@ -15,9 +15,11 @@ class Card:
         return self.__str__()
 
 
+SUITS = ['gold', 'sword', 'cup', 'club']
+
+
 def setup_deck():
     suits = ['gold', 'sword', 'cup', 'club']
-
     cards = {'gold': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
              'sword': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
              'cup': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
@@ -81,7 +83,32 @@ def show_info():
     print('current number : ', current_number)
 
 
-# def next_turn():
+def next_turn():
+    global current_turn
+    print('===========\n')
+    show_info()
+    print('===========\n')
+    current_turn += 1
+
+
+def special_card(number):
+    global current_suit
+    global current_number
+    if number == 7:
+        chosen_suit = int(input('Choose a suit, 1 : gold, 2 : swords, 3 : cups, 4 : clubs '))
+        current_suit = SUITS[chosen_suit - 1]
+        current_number = 7
+    elif number == 2:
+
+
+
+def check_winner(current_hand):
+    global end_game
+    if not current_hand:
+        print('player {0} WINS'.format(current_player))
+        end_game = False
+
+
 special_cards = [1, 2, 7]
 
 my_deck = setup_deck()
@@ -105,10 +132,11 @@ current_number = first_card.number
 show_info()
 
 current_player = 'One'
-turn = 1
+current_turn = 1
 end_game = True
-while True:
-    if turn % 2 == 0:
+
+while end_game:
+    if current_turn % 2 == 0:
         current_player = 'Two'
         print('player two ', players['Two'])
     else:
@@ -116,17 +144,30 @@ while True:
         print('player one ', players['One'])
     card_choice = int(
         input('player {0} turn : write the index of the card you wanna play and 0 to draw a card :'.format(
-            current_player))) - 1
-    chosen_card = players[current_player][card_choice]
-    if card_is_playable(chosen_card):
-        print(chosen_card)
-        players[current_player].remove(chosen_card)
-        board.append(chosen_card)
-        current_suit = chosen_card.suit
-        current_number = chosen_card.number
-        print('===========\n')
-        show_info()
-        print('===========\n')
-        turn += 1
+            current_player)))
+    if card_choice == 0:
+        chosen_card = my_deck.pop(len(my_deck) - 1)
+        players[current_player].append(chosen_card)
+        print('adding {0} to your hand'.format(chosen_card))
+        next_turn()
     else:
-        print('cant play that')
+        chosen_card = players[current_player][card_choice - 1]
+        if card_is_playable(chosen_card):
+            if chosen_card.number in special_cards:
+                print(chosen_card)
+                special_card(chosen_card.number)
+                players[current_player].remove(chosen_card)
+                board.append(chosen_card)
+                next_turn()
+                check_winner(players[current_player])
+            else:
+                print(chosen_card)
+                players[current_player].remove(chosen_card)
+                board.append(chosen_card)
+                current_suit = chosen_card.suit
+                current_number = chosen_card.number
+                next_turn()
+                check_winner(players[current_player])
+
+        else:
+            print('cant play that')
