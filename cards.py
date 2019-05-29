@@ -16,6 +16,7 @@ class Card:
 
 
 SUITS = ['gold', 'sword', 'cup', 'club']
+OTHER_PLAYER = {'One': 'Two', 'Two': 'One'}
 
 
 def setup_deck():
@@ -85,20 +86,31 @@ def show_info():
 
 def next_turn():
     global current_turn
-    print('===========\n')
     show_info()
     print('===========\n')
     current_turn += 1
 
 
-def special_card(number):
+def special_card(current_player, chosen_card):
     global current_suit
     global current_number
-    if number == 7:
+    if chosen_card.number == 7:
         chosen_suit = int(input('Choose a suit, 1 : gold, 2 : swords, 3 : cups, 4 : clubs '))
         current_suit = SUITS[chosen_suit - 1]
         current_number = 7
-    elif number == 2:
+        players[current_player].remove(chosen_card)
+        board.append(chosen_card)
+        next_turn()
+        check_winner(players[current_player])
+    elif chosen_card.number == 2:
+        next_turn()
+        choice = int(input('0: to draw +2, 1: to play a +2 card'))
+        if choice == 0:
+            first_card = my_deck.pop(len(my_deck) - 1)
+            players[OTHER_PLAYER[current_player]].append(first_card)
+            second_card = my_deck.pop(len(my_deck) - 1)
+            players[OTHER_PLAYER[current_player]].append(second_card)
+            print('adding {0} and {1} to your hand'.format(first_card, second_card))
 
 
 
@@ -143,7 +155,7 @@ while end_game:
         current_player = 'One'
         print('player one ', players['One'])
     card_choice = int(
-        input('player {0} turn : write the index of the card you wanna play and 0 to draw a card :'.format(
+        input('player {0} turn : write the index of the card you wanna play and 0 to draw a card : '.format(
             current_player)))
     if card_choice == 0:
         chosen_card = my_deck.pop(len(my_deck) - 1)
@@ -155,11 +167,7 @@ while end_game:
         if card_is_playable(chosen_card):
             if chosen_card.number in special_cards:
                 print(chosen_card)
-                special_card(chosen_card.number)
-                players[current_player].remove(chosen_card)
-                board.append(chosen_card)
-                next_turn()
-                check_winner(players[current_player])
+                special_card(current_player, chosen_card)
             else:
                 print(chosen_card)
                 players[current_player].remove(chosen_card)
