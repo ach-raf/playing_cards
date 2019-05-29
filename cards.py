@@ -107,10 +107,14 @@ def special_card(current_player, chosen_card):
         choice = int(input('0: to draw +2, 1: to play a +2 card'))
         if choice == 0:
             first_card = my_deck.pop(len(my_deck) - 1)
-            players[OTHER_PLAYER[current_player]].append(first_card)
+            players[current_player].append(first_card)
             second_card = my_deck.pop(len(my_deck) - 1)
-            players[OTHER_PLAYER[current_player]].append(second_card)
+            players[current_player].append(first_card)
             print('adding {0} and {1} to your hand'.format(first_card, second_card))
+            next_turn()
+        elif choice == 1:
+            print(players[current_player])
+
 
 
 
