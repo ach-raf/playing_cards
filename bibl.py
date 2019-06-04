@@ -2,10 +2,8 @@ import random
 
 
 class Card:
-    def __init__(self):
-        print('Card created')
 
-    def __init__(self, suit, number):
+    def __init__(self, suit='x', number=-1):
         self.suit = suit
         self.number = number
 
@@ -29,7 +27,7 @@ class Player:
         self.label = label
         self.hand = []
         self.num_cards_left = len(self.hand)
-        self.last_card = Card()
+        self.last_card_played = Card()
 
     def add_card(self, card):
         self.hand.append(card)
@@ -48,10 +46,17 @@ class Player:
             # remove the card from the hand of the player and storing it in temp_card
             temp_card = self.hand.pop(card_index)
             # last played card by a player
-            self.last_card = temp_card
+            self.last_card_played = temp_card
             return temp_card
         except IndexError:
             return False
+
+    def __str__(self):
+        """Format: the suit on the left and number on the right"""
+        return str(self.hand)
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Board:
@@ -65,10 +70,17 @@ class Board:
     def clear(self):
         self.board = []
 
+    def __str__(self):
+        """Format: the suit on the left and number on the right"""
+        return str(self.board)
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class Deck:
     def __init__(self):
-        self.deck = []
+        self.cards = []
         suits = ['gold', 'sword', 'cup', 'club']
         cards = {'gold': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
                  'sword': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
@@ -80,7 +92,7 @@ class Deck:
         random.shuffle(cards['cup'])
         random.shuffle(cards['club'])
 
-        while len(self.deck) != 40:
+        while len(self.cards) != 40:
             suit = random.choice(suits)
             if len(cards[suit]) == 1:
                 num = cards[suit].pop(0)
@@ -88,18 +100,44 @@ class Deck:
             else:
                 num = cards[suit].pop(0)
             card = Card(suit, num)
-            self.deck.append(card)
+            self.cards.append(card)
 
-        random.shuffle(self.deck)
+        random.shuffle(self.cards)
 
     def get_card(self):
         try:
-            return self.deck.pop(len(self.deck))
+            return self.cards.pop(len(self.cards) - 1)
         except IndexError:
             return False
 
     def re_shuffle(self, board):
-        [self.deck.append(card) for card in board]
-        
-    
+        [self.cards.append(card) for card in board]
 
+    def __str__(self):
+        """Format: the suit on the left and number on the right"""
+        return str(self.cards)
+
+    def __repr__(self):
+        return self.__str__()
+
+
+def setup_game():
+    deck = Deck()
+    first_card = deck.cards.pop(len(deck.cards) - 1)
+    board = Board(first_card)
+    players = []
+    number_of_players = int(input('How many players, MAX is 4 '))
+    while number_of_players > 4 or number_of_players < 1:
+        number_of_players = input('choose between 1 and 4 players')
+
+    for indx in range(number_of_players):
+        players.append([])
+
+    return deck, board, players
+
+
+deck, board, players = setup_game()
+
+print(deck)
+print(board)
+print(players)
