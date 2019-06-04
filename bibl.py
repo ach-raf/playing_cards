@@ -62,6 +62,7 @@ class Player:
 class Board:
     def __init__(self, last_card):
         self.board = []
+        self.board.append(last_card)
         self.last_card = last_card
 
     def add_card(self, card):
@@ -82,23 +83,23 @@ class Deck:
     def __init__(self):
         self.cards = []
         suits = ['gold', 'sword', 'cup', 'club']
-        cards = {'gold': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
-                 'sword': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
-                 'cup': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
-                 'club': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12]}
+        default_cards = {'gold': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
+                         'sword': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
+                         'cup': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
+                         'club': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12]}
 
-        random.shuffle(cards['gold'])
-        random.shuffle(cards['sword'])
-        random.shuffle(cards['cup'])
-        random.shuffle(cards['club'])
+        random.shuffle(default_cards['gold'])
+        random.shuffle(default_cards['sword'])
+        random.shuffle(default_cards['cup'])
+        random.shuffle(default_cards['club'])
 
         while len(self.cards) != 40:
             suit = random.choice(suits)
-            if len(cards[suit]) == 1:
-                num = cards[suit].pop(0)
+            if len(default_cards[suit]) == 1:
+                num = default_cards[suit].pop(0)
                 suits.remove(suit)
             else:
-                num = cards[suit].pop(0)
+                num = default_cards[suit].pop(0)
             card = Card(suit, num)
             self.cards.append(card)
 
