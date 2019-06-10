@@ -53,7 +53,7 @@ class Player:
 
     def __str__(self):
         """Format: the suit on the left and number on the right"""
-        return str(self.hand)
+        return 'Hand: {}'.format(self.hand)
 
     def __repr__(self):
         return self.__str__()
@@ -64,6 +64,8 @@ class Board:
         self.board = []
         self.board.append(last_card)
         self.last_card = last_card
+        self.current_suit = last_card.suit
+        self.current_number = last_card.number
 
     def add_card(self, card):
         self.board.append(card)
@@ -71,9 +73,19 @@ class Board:
     def clear(self):
         self.board = []
 
+    """def last_card
+
+    def current_suit(self):
+        return self.current_suit
+
+    def current_number(self):
+        return self.current_number"""
+
     def __str__(self):
         """Format: the suit on the left and number on the right"""
-        return str(self.board)
+        return 'Board: {}\nLast Card: {}\nCurrent Suit: {}\nCurrent Number: {}'.format(self.board, self.last_card,
+                                                                                       self.current_suit,
+                                                                                       self.current_number)
 
     def __repr__(self):
         return self.__str__()
@@ -82,6 +94,7 @@ class Board:
 class Deck:
     def __init__(self):
         self.cards = []
+        self.len = 40
         suits = ['gold', 'sword', 'cup', 'club']
         default_cards = {'gold': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
                          'sword': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
@@ -107,38 +120,40 @@ class Deck:
 
     def get_card(self):
         try:
+            self.len -= 1
             return self.cards.pop(len(self.cards) - 1)
         except IndexError:
             return False
 
-    def re_shuffle(self, board):
-        [self.cards.append(card) for card in board]
+    def re_shuffle(self, my_board):
+        [self.cards.append(card) for card in my_board]
 
     def __str__(self):
         """Format: the suit on the left and number on the right"""
-        return str(self.cards)
+        return 'Deck:\n{}'.format(self.cards)
 
     def __repr__(self):
         return self.__str__()
 
 
 def setup_game():
-    deck = Deck()
-    first_card = deck.cards.pop(len(deck.cards) - 1)
-    board = Board(first_card)
-    players = []
+    my_deck = Deck()
+    first_card = my_deck.get_card()
+    my_board = Board(first_card)
     number_of_players = int(input('How many players, MAX is 4 '))
     while number_of_players > 4 or number_of_players < 1:
         number_of_players = input('choose between 1 and 4 players')
-
+    my_players = []
     for indx in range(number_of_players):
-        players.append([])
+        my_players.append([])
+        for num_of_cards in range(5):
+            my_players[indx].append(my_deck.get_card())
 
-    return deck, board, players
+    return my_deck, my_board, my_players
 
 
 deck, board, players = setup_game()
 
 print(deck)
-print(board)
 print(players)
+print(board)
