@@ -47,7 +47,7 @@ class Player:
             temp_card = self.hand.pop(card_index)
             # last played card by a player
             self.last_card_played = temp_card
-            return temp_card
+            return Card(temp_card)
         except IndexError:
             return False
 
@@ -60,26 +60,21 @@ class Player:
 
 
 class Board:
-    def __init__(self, last_card):
+    def __init__(self, card):
         self.board = []
-        self.board.append(last_card)
-        self.last_card = last_card
-        self.current_suit = last_card.suit
-        self.current_number = last_card.number
+        self.board.append(card)
+        self.last_card = card
+        self.current_suit = card.suit
+        self.current_number = card.number
 
     def add_card(self, card):
         self.board.append(card)
+        self.last_card = card
+        self.current_suit = card.suit
+        self.current_number = card.number
 
     def clear(self):
         self.board = []
-
-    """def last_card
-
-    def current_suit(self):
-        return self.current_suit
-
-    def current_number(self):
-        return self.current_number"""
 
     def __str__(self):
         """Format: the suit on the left and number on the right"""
@@ -94,7 +89,7 @@ class Board:
 class Deck:
     def __init__(self):
         self.cards = []
-        self.len = 40
+        self.length = 40
         suits = ['gold', 'sword', 'cup', 'club']
         default_cards = {'gold': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
                          'sword': [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
@@ -120,12 +115,13 @@ class Deck:
 
     def get_card(self):
         try:
-            self.len -= 1
+            self.length -= 1
             return self.cards.pop(len(self.cards) - 1)
         except IndexError:
             return False
 
     def re_shuffle(self, my_board):
+        random.shuffle(my_board)
         [self.cards.append(card) for card in my_board]
 
     def __str__(self):
@@ -144,16 +140,68 @@ def setup_game():
     while number_of_players > 4 or number_of_players < 1:
         number_of_players = input('choose between 1 and 4 players')
     my_players = []
+    temp_player_count = 0
     for indx in range(number_of_players):
-        my_players.append([])
+        my_players.append(Player(temp_player_count))
+        temp_player_count += 1
         for num_of_cards in range(5):
-            my_players[indx].append(my_deck.get_card())
+            my_players[indx].add_card(my_deck.get_card())
 
     return my_deck, my_board, my_players
+
+
+def show_players(my_players):
+    player_num = 0
+    for temp_player in my_players:
+        print('Player {}: {}'.format(player_num, temp_player.hand))
+        player_num += 1
+
+
+def show_info(my_board):
+    print(my_board)
+
+
+def next_turn():
+    global current_player
+    global current_turn
+    if current_player == len(players) - 1:
+        current_player = 0
+    else:
+        current_player += 1
+    current_turn += 1
 
 
 deck, board, players = setup_game()
 
 print(deck)
-print(players)
+# show_players(players)
 print(board)
+
+current_player = 0
+current_turn = 0
+end_game = False
+while not end_game:
+    print('player {} : {}'.format(current_player, players[current_player]))
+    card_choice = int(
+        input('player {0} turn : write the index of the card you wanna play and 0 to draw a card : '.format(
+            current_player)))
+    if card_choice == 0:
+        if deck.get_card():
+            chosen_card = deck.get_card()
+        else:
+            deck.re_shuffle(board)
+            board.clear()
+            chosen_card = deck.get_card()
+        players[current_player].add_card(chosen_card)
+        print('adding {0} to your hand'.format(chosen_card))
+
+    else:
+        if players[current_player].throw_card(card_choice):
+            chosen_card = players[current_player].throw_card(card_choice)
+            if chosen_card.is_special():
+                print('special')
+            else:
+                board.add_card(chosen_card)
+
+    show_info(board)
+    next_turn()
