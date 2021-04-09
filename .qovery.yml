@@ -1,0 +1,16 @@
+---
+application:
+  name: "playing-cards"
+  project: "test_1"
+  organization: "QoveryCommunity"
+  storage:
+  - name: "disk_1"
+    size: "500"
+    type: "slow_hdd"
+    mount_point: "/mnt/disk_1"
+routers:
+- name: "main-playing-cards"
+  routes:
+  - application_name: "playing-cards"
+    paths:
+    - "/*"
