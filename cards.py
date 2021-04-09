@@ -108,8 +108,8 @@ def check_winner(current_hand):
         print('player {0} WINS'.format(current_player))
         end_game = False
 
-
-special_cards = [1, 2, 7]
+def main():
+    special_cards = [1, 2, 7]
 
 my_deck = setup_deck()
 players = {'One': [], 'Two': []}
@@ -171,3 +171,7 @@ while end_game:
 
         else:
             print('cant play that')
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()
